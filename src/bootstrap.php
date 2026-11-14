@@ -34,4 +34,6 @@ $routes($router);
 $method = (string) ($_SERVER['REQUEST_METHOD'] ?? 'GET');
 $path = (string) ($_SERVER['REQUEST_URI'] ?? '/');
 
-$router->dispatch($method, $path);
+if (PHP_SAPI !== 'cli') {
+    $router->dispatch($method, $path);
+}
