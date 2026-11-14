@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Core\App;
 use App\Core\Database;
+use App\Core\Router;
 
 // Autoloader must already be required by the caller (index.php).
 // But we defensively re-check in case bootstrap.php is used from CLI too.
@@ -23,9 +24,12 @@ ini_set('log_errors', '1');
 // --- Database ---
 Database::init();
 
-// --- Placeholder: prove the pipeline works ---
-echo "<h1>Bootstrap works</h1>";
-echo "<p>Environment: " . e(config('app.env')) . "</p>";
-echo "<p>Debug: " . var_export(config('app.debug'), true) . "</p>";
-echo "<p>DB: " . e(config('db.name')) . " @ " . e(config('db.host')) . "</p>";
-echo "<p>Escape test: " . e('<b>x</b>') . "</p>";
+// --- Router ---
+$router = new Router();
+$routes = require __DIR__ . '/routes.php';
+$routes($router);
+
+$method = (string) ($_SERVER['REQUEST_METHOD'] ?? 'GET');
+$path = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+
+$router->dispatch($method, $path);
