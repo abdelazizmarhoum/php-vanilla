@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Core\App;
+use App\Core\Session;
 use App\Core\Database;
 use App\Core\Router;
 
@@ -14,6 +15,7 @@ if (!class_exists(App::class, false)) {
 // --- Config first (this is what loads .env via Dotenv) ---
 $config = require __DIR__ . '/../config/config.php';
 App::init($config);
+Session::start();
 
 // --- Errors (needs config loaded to know debug flag) ---
 $debug = (bool) config('app.debug', false);

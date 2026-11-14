@@ -16,6 +16,8 @@ final class Response
      */
     private array $headers = [];
 
+    private bool $sent = false;
+
     public function html(string $html, int $status = 200): self
     {
         $this->body = $html;
@@ -62,6 +64,11 @@ final class Response
 
     public function send(): void
     {
+        if ($this->sent) {
+            return;
+        }
+
+        $this->sent = true;
         http_response_code($this->statusCode);
 
         foreach ($this->headers as $name => $value) {
