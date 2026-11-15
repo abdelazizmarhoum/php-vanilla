@@ -7,10 +7,11 @@ use App\Core\Router;
 use App\Core\CSRF;
 use App\Core\Session;
 use App\Core\View;
+use App\Controllers\AuthController;
 
 return static function (Router $router): void {
     $router->get('/', static function (Request $request, Response $response): Response {
-        return $response->html('<h1>Home</h1><p>Welcome to the team workspace.</p>');
+        return View::render('pages/home', ['title' => 'Home']);
     });
 
     $router->get('/about', static function (Request $request, Response $response): Response {
@@ -28,15 +29,22 @@ return static function (Router $router): void {
     });
 
     $router->post('/form', static function (Request $request, Response $response): Response {
-        $token = $_POST['_token'] ?? null;
+        $body = is_array($request->body) ? $request->body : [];
+        $token = $body['_token'] ?? null;
         if (!is_string($token) || !CSRF::verify($token)) {
             return $response->html('CSRF check failed', 419);
         }
 
-        $message = $_POST['message'] ?? '';
+        $message = $body['message'] ?? '';
         Session::set('_form_last', is_string($message) ? $message : '');
         Session::flash('success', 'Form submitted');
 
         return $response->redirect('/form');
     });
+
+    $router->get('/login', [AuthController::class, 'showLogin']);
+    $router->post('/login', [AuthController::class, 'login']);
+    $router->get('/register', [AuthController::class, 'showRegister']);
+    $router->post('/register', [AuthController::class, 'register']);
+    $router->post('/logout', [AuthController::class, 'logout']);
 };

@@ -186,6 +186,16 @@ final class Router
             return is_array($decoded) ? $decoded : $rawBody;
         }
 
+        if (str_contains($contentType, 'application/x-www-form-urlencoded')) {
+            parse_str($rawBody, $parsed);
+
+            return $parsed;
+        }
+
+        if (str_contains($contentType, 'multipart/form-data')) {
+            return is_array($_POST) ? $_POST : [];
+        }
+
         return $rawBody;
     }
 

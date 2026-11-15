@@ -1,5 +1,8 @@
 <?php
 declare(strict_types=1);
+
+use App\Auth\Auth;
+use App\Core\CSRF;
 ?>
 <!doctype html>
 <html lang="en">
@@ -17,6 +20,17 @@ declare(strict_types=1);
             <div class="navbar-nav">
                 <a class="nav-link" href="/">Home</a>
                 <a class="nav-link" href="/about">About</a>
+                <?php if (Auth::check()): ?>
+                    <?php $signedInUser = Auth::user(); ?>
+                    <span class="nav-link">Signed in as <?= e($signedInUser['name']) ?></span>
+                    <form class="d-inline" method="post" action="/logout">
+                        <?= CSRF::field() ?>
+                        <button class="nav-link btn btn-link" type="submit">Log out</button>
+                    </form>
+                <?php else: ?>
+                    <a class="nav-link" href="/login">Sign in</a>
+                    <a class="nav-link" href="/register">Create account</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
