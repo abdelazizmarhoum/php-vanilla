@@ -4,6 +4,8 @@ declare(strict_types=1);
 use App\Auth\Auth;
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
+use App\Controllers\InvitationController;
+use App\Controllers\WorkspaceController;
 use App\Core\CSRF;
 use App\Core\Request;
 use App\Core\Response;
@@ -11,6 +13,7 @@ use App\Core\Router;
 use App\Core\Session;
 use App\Core\View;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\WorkspaceMiddleware;
 
 return static function (Router $router): void {
     $router->get('/', static function (Request $request, Response $response): Response {
@@ -22,6 +25,14 @@ return static function (Router $router): void {
     });
 
     $router->get('/dashboard', [DashboardController::class, 'index'], [AuthMiddleware::class]);
+    $router->get('/workspaces', [WorkspaceController::class, 'index'], [AuthMiddleware::class]);
+    $router->get('/workspaces/create', [WorkspaceController::class, 'showCreate'], [AuthMiddleware::class]);
+    $router->post('/workspaces', [WorkspaceController::class, 'create'], [AuthMiddleware::class]);
+    $router->get('/w/{slug}', [WorkspaceController::class, 'show'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/settings', [WorkspaceController::class, 'showSettings'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/settings', [WorkspaceController::class, 'update'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/delete', [WorkspaceController::class, 'delete'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/invite', [InvitationController::class, 'showInvite'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
 
     $router->get('/about', static function (Request $request, Response $response): Response {
         return View::render('pages/about', ['title' => 'About']);

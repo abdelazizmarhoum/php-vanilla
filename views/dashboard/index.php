@@ -11,4 +11,20 @@ require dirname(__DIR__) . '/partials/flash.php';
         <p><strong>Member since:</strong> <?= e($user['created_at']) ?></p>
     </div>
 </div>
-<p>Your workspaces will appear here soon.</p>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 mb-0">Your workspaces</h2>
+    <a class="btn btn-primary" href="/workspaces/create">Create workspace</a>
+</div>
+<?php if ($workspaces === []): ?>
+    <p>You don't belong to any workspaces yet</p>
+<?php else: ?>
+    <div class="list-group mb-3">
+        <?php foreach ($workspaces as $workspace): ?>
+            <a class="list-group-item list-group-item-action d-flex justify-content-between" href="/w/<?= e($workspace['slug']) ?>">
+                <span><?= e($workspace['name']) ?></span>
+                <span class="badge text-bg-secondary"><?= e($workspace['role']) ?></span>
+            </a>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+<a href="/workspaces">View all</a>

@@ -19,8 +19,8 @@ final class Request
         public readonly array $headers = [],
         private array $params = [],
         private ?array $currentUser = null,
-        private ?array $currentWorkspace = null,
-        private ?array $currentMembership = null,
+        public ?array $workspace = null,
+        public ?array $membership = null,
     ) {
     }
 
@@ -36,17 +36,15 @@ final class Request
 
     public function workspace(): ?array
     {
-        return $this->currentWorkspace;
+        return $this->workspace;
     }
 
     public function membership(): ?array
     {
-        return $this->currentMembership;
+        return $this->membership;
     }
 
-    /**
-     * @param array<string, string> $params
-     */
+    /** @param array<string, string> $params */
     public function setParams(array $params): void
     {
         $this->params = $params;
@@ -59,11 +57,11 @@ final class Request
 
     public function setWorkspace(?array $workspace): void
     {
-        $this->currentWorkspace = $workspace;
+        $this->workspace = $workspace;
     }
 
     public function setMembership(?array $membership): void
     {
-        $this->currentMembership = $membership;
+        $this->membership = $membership;
     }
 }
