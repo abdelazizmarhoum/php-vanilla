@@ -1,18 +1,27 @@
 <?php
 declare(strict_types=1);
 
+use App\Auth\Auth;
+use App\Controllers\AuthController;
+use App\Controllers\DashboardController;
+use App\Core\CSRF;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
-use App\Core\CSRF;
 use App\Core\Session;
 use App\Core\View;
-use App\Controllers\AuthController;
+use App\Middleware\AuthMiddleware;
 
 return static function (Router $router): void {
     $router->get('/', static function (Request $request, Response $response): Response {
-        return View::render('pages/home', ['title' => 'Home']);
+        if (Auth::check()) {
+            return $response->redirect('/dashboard');
+        }
+
+        return $response->redirect('/login');
     });
+
+    $router->get('/dashboard', [DashboardController::class, 'index'], [AuthMiddleware::class]);
 
     $router->get('/about', static function (Request $request, Response $response): Response {
         return View::render('pages/about', ['title' => 'About']);

@@ -22,7 +22,7 @@ use App\Core\CSRF;
                 <a class="nav-link" href="/about">About</a>
                 <?php if (Auth::check()): ?>
                     <?php $signedInUser = Auth::user(); ?>
-                    <span class="nav-link">Signed in as <?= e($signedInUser['name']) ?></span>
+                    <a class="nav-link" href="/dashboard">Signed in as <?= e($signedInUser['name']) ?></a>
                     <form class="d-inline" method="post" action="/logout">
                         <?= CSRF::field() ?>
                         <button class="nav-link btn btn-link" type="submit">Log out</button>
