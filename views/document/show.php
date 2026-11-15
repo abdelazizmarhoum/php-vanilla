@@ -4,12 +4,39 @@ declare(strict_types=1);
 use App\Core\CSRF;
 
 require dirname(__DIR__) . '/partials/flash.php';
+
+$topComments = [];
+$repliesByParent = [];
+foreach ($comments as $comment) {
+    if ($comment['parent_id'] === null) {
+        $topComments[] = $comment;
+    } else {
+        $repliesByParent[(string) $comment['parent_id']][] = $comment;
+    }
+}
 ?>
 <h1><?= e($document['title']) ?></h1>
 <p class="text-body-secondary">By <?= e($document['author_name']) ?> · <?= e($document['updated_at']) ?></p>
 <div id="document-view" class="card mb-3">
     <div class="card-body"><pre class="mb-0"><?= e($document['content']) ?></pre></div>
 </div>
+<section id="comments" class="mt-4">
+    <h2 class="h4">Comments (<?= e($comment_count) ?>)</h2>
+    <?php if ($canWrite): ?>
+        <form method="post" action="/w/<?= e($workspace['slug']) ?>/documents/<?= e($document['id']) ?>/comments" class="mb-4">
+            <?= CSRF::field() ?>
+            <textarea class="form-control mb-2" name="body" rows="3" maxlength="5000" required></textarea>
+            <button class="btn btn-primary" type="submit">Post comment</button>
+        </form>
+    <?php endif; ?>
+    <?php foreach ($topComments as $comment): ?>
+        <?php
+        $replies = $repliesByParent[(string) $comment['id']] ?? [];
+        $isReply = false;
+        require dirname(__DIR__) . '/partials/comment.php';
+        ?>
+    <?php endforeach; ?>
+</section>
 <?php if ($canWrite): ?>
     <div id="document-editor" class="card mb-3" hidden>
         <div class="card-body">
@@ -52,3 +79,4 @@ document.getElementById('delete-document').addEventListener('submit', (event) =>
 });
 </script>
 <?php endif; ?>
+<script src="/assets/js/comments.js" defer></script>

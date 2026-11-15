@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Auth\Auth;
 use App\Controllers\AuthController;
+use App\Controllers\CommentController;
 use App\Controllers\DashboardController;
 use App\Controllers\DocumentController;
 use App\Controllers\InvitationController;
@@ -40,6 +41,8 @@ return static function (Router $router): void {
     $router->get('/w/{slug}/documents/{id}', [DocumentController::class, 'show'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/documents/{id}/update', [DocumentController::class, 'update'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/documents/{id}/delete', [DocumentController::class, 'delete'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/documents/{id}/comments', [CommentController::class, 'create'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/documents/{id}/comments/{comment_id}/delete', [CommentController::class, 'delete'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/documents/{id}/history', [DocumentController::class, 'history'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/documents/{id}/history/{version_id}', [DocumentController::class, 'showVersion'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/documents/{id}/history/{version_id}/restore', [DocumentController::class, 'restoreVersion'], [AuthMiddleware::class, WorkspaceMiddleware::class]);

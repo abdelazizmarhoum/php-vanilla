@@ -10,6 +10,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Core\View;
+use App\Models\Comment;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 
@@ -40,6 +41,10 @@ final class DocumentController
             'workspace' => $req->workspace,
             'document' => $document,
             'canWrite' => WorkspaceContext::can('write'),
+            'canManage' => WorkspaceContext::can('manage'),
+            'currentUserId' => Auth::id(),
+            'comments' => Comment::listForDocument((int) $document['id']),
+            'comment_count' => Comment::countForDocument((int) $document['id']),
         ]);
     }
 
