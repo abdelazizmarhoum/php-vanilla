@@ -24,6 +24,12 @@ use App\Core\CSRF;
                     <?php $signedInUser = Auth::user(); ?>
                     <a class="nav-link" href="/dashboard">Signed in as <?= e($signedInUser['name']) ?></a>
                     <a class="nav-link" href="/workspaces">Workspaces</a>
+                    <div class="position-relative ms-2">
+                        <form method="get" action="/search" class="d-flex">
+                            <input id="nav-search" class="form-control form-control-sm" type="search" name="q" placeholder="Search" value="<?= e($q ?? '') ?>" autocomplete="off" data-api="/search/api">
+                        </form>
+                        <div id="nav-search-results" class="dropdown-menu"></div>
+                    </div>
                     <form class="d-inline" method="post" action="/logout">
                         <?= CSRF::field() ?>
                         <button class="nav-link btn btn-link" type="submit">Log out</button>
@@ -37,5 +43,6 @@ use App\Core\CSRF;
     </nav>
     <main class="container py-4"><?= $content ?></main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <?php if (Auth::check()): ?><script src="/assets/js/search.js" defer></script><?php endif; ?>
 </body>
 </html>

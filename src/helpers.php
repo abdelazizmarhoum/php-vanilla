@@ -66,3 +66,15 @@ function humanize_action(string $action, array $meta = []): string
         default => $action,
     };
 }
+
+function safe_highlight(string $snippet): string
+{
+    // Escapes HTML in a snippet, then re-enables <mark> tags inserted by ts_headline. Never apply to raw user data — only to ts_headline output.
+    $escaped = e($snippet);
+
+    return str_replace(
+        ['&lt;mark&gt;', '&lt;/mark&gt;'],
+        ['<mark>', '</mark>'],
+        $escaped,
+    );
+}

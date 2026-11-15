@@ -29,6 +29,45 @@ final class Document
         )->fetchAll();
     }
 
+    public static function searchForUser(int $userId, string $query, int $limit = 30): array
+    {
+        $query = trim($query);
+        if ($query === '') {
+            return [];
+        }
+
+        $query = mb_substr($query, 0, 200);
+        $limit = max(1, min($limit, 100));
+
+        return Database::q(
+            <<<'SQL'
+            SELECT d.id, d.title, d.workspace_id, d.updated_at,
+                   w.name AS workspace_name, w.slug AS workspace_slug,
+                   ts_headline(
+                       'simple',
+                       d.content,
+                       q,
+                       'StartSel=<mark>,StopSel=</mark>,MaxFragments=2'
+                   ) AS snippet,
+                   ts_rank(d.search_vector, q) AS rank
+            FROM documents d
+            INNER JOIN workspaces w ON w.id = d.workspace_id
+            INNER JOIN memberships m
+                ON m.workspace_id = d.workspace_id
+               AND m.user_id = :user_id
+            CROSS JOIN websearch_to_tsquery('simple', :query) AS q
+            WHERE d.search_vector @@ q
+            ORDER BY rank DESC, d.updated_at DESC
+            LIMIT :limit
+            SQL,
+            [
+                'user_id' => $userId,
+                'query' => $query,
+                'limit' => $limit,
+            ],
+        )->fetchAll();
+    }
+
     public static function create(int $workspaceId, int $authorId, string $title, string $content): array
     {
         $pdo = Database::pdo();
