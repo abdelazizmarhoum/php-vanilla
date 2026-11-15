@@ -51,6 +51,10 @@ final class CommentController
         }
 
         $comment = Comment::create((int) $document['id'], (int) Auth::id(), $parentId, $commentBody);
+        activity((int) $req->workspace['id'], 'comment.added', 'comment', (int) $comment['id'], [
+            'document_id' => (int) $document['id'],
+            'document_title' => $document['title'],
+        ]);
         if ($this->expectsJson($req)) {
             return (new Response())->json([
                 'id' => $comment['id'],
@@ -98,6 +102,10 @@ final class CommentController
         } else {
             Comment::deleteByModerator((int) $comment['id']);
         }
+        activity((int) $req->workspace['id'], 'comment.deleted', 'comment', (int) $comment['id'], [
+            'document_id' => (int) $document['id'],
+            'document_title' => $document['title'],
+        ]);
 
         if ($this->expectsJson($req)) {
             return (new Response())->json(['deleted' => true]);

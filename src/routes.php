@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Auth\Auth;
+use App\Controllers\ActivityController;
 use App\Controllers\AuthController;
 use App\Controllers\CommentController;
 use App\Controllers\DashboardController;
@@ -46,6 +47,8 @@ return static function (Router $router): void {
     $router->get('/w/{slug}/documents/{id}/history', [DocumentController::class, 'history'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/documents/{id}/history/{version_id}', [DocumentController::class, 'showVersion'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/documents/{id}/history/{version_id}/restore', [DocumentController::class, 'restoreVersion'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/activity', [ActivityController::class, 'page'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/activity/feed', [ActivityController::class, 'feed'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
 
     $router->get('/about', static function (Request $request, Response $response): Response {
         return View::render('pages/about', ['title' => 'About']);

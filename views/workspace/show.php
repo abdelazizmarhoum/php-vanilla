@@ -32,3 +32,17 @@ require dirname(__DIR__) . '/partials/flash.php';
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
+<h2 class="h4 mt-4">Recent activity</h2>
+<div id="activity-feed"
+     data-workspace-slug="<?= e($workspace['slug']) ?>"
+     data-last-id="<?= e($activity[0]['id'] ?? 0) ?>">
+    <?php if ($activity === []): ?>
+        <p class="activity-empty">No activity yet.</p>
+    <?php else: ?>
+        <?php foreach ($activity as $item): ?>
+            <?php require dirname(__DIR__) . '/partials/activity-item.php'; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+<a href="/w/<?= e($workspace['slug']) ?>/activity">View all activity</a>
+<script src="/assets/js/activity.js" defer></script>

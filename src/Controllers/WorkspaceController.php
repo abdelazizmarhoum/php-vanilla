@@ -63,6 +63,9 @@ final class WorkspaceController
             }
             throw $exception;
         }
+        activity((int) $workspace['id'], 'workspace.created', 'workspace', (int) $workspace['id'], [
+            'name' => $workspace['name'],
+        ]);
 
         Session::flash('success', 'Workspace created');
 
@@ -80,6 +83,7 @@ final class WorkspaceController
             'membership' => $membership,
             'role' => WorkspaceContext::role(),
             'memberCount' => Membership::count((int) $workspace['id']),
+            'activity' => \App\Models\ActivityLog::listForWorkspace((int) $workspace['id'], 20),
         ]);
     }
 
@@ -124,6 +128,9 @@ final class WorkspaceController
         }
 
         Workspace::update((int) $workspace['id'], $name, $slug);
+        activity((int) $workspace['id'], 'workspace.updated', 'workspace', (int) $workspace['id'], [
+            'name' => $name,
+        ]);
         Session::flash('success', 'Workspace updated');
 
         return (new Response())->redirect('/w/' . $slug);

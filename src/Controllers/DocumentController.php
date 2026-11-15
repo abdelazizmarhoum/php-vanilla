@@ -85,6 +85,9 @@ final class DocumentController
             $title,
             $content,
         );
+        activity((int) $req->workspace['id'], 'document.created', 'document', (int) $document['id'], [
+            'title' => $document['title'],
+        ]);
 
         return (new Response())->redirect('/w/' . $req->param('slug') . '/documents/' . $document['id']);
     }
@@ -114,6 +117,9 @@ final class DocumentController
         }
 
         $updated = Document::update((int) $document['id'], (int) Auth::id(), $title, $content);
+        activity((int) $req->workspace['id'], 'document.updated', 'document', (int) $document['id'], [
+            'title' => $title,
+        ]);
         if ($this->expectsJson($req)) {
             return (new Response())->json([
                 'updated_at' => $updated['updated_at'],
@@ -140,7 +146,11 @@ final class DocumentController
             return (new Response())->html('Document not found', 404);
         }
 
-        Document::delete((int) $document['id']);
+        $documentId = (int) $document['id'];
+        Document::delete($documentId);
+        activity((int) $req->workspace['id'], 'document.deleted', 'document', $documentId, [
+            'title' => $document['title'],
+        ]);
         Session::flash('success', 'Document deleted');
 
         return (new Response())->redirect('/w/' . $req->param('slug') . '/documents');
@@ -194,15 +204,20 @@ final class DocumentController
             return (new Response())->html('Version not found', 404);
         }
 
+        $documentId = (int) $version['document_id'];
         Document::update(
-            (int) $version['document_id'],
+            $documentId,
             (int) Auth::id(),
             (string) $version['title'],
             (string) $version['content'],
         );
+        activity((int) $req->workspace['id'], 'document.restored', 'document', $documentId, [
+            'title' => $version['title'],
+            'version_id' => (int) $version['id'],
+        ]);
         Session::flash('success', 'Version restored');
 
-        return (new Response())->redirect('/w/' . $req->param('slug') . '/documents/' . $version['document_id']);
+        return (new Response())->redirect('/w/' . $req->param('slug') . '/documents/' . $documentId);
     }
 
     /** @return array<string, mixed> */
