@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Auth\Auth;
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
+use App\Controllers\DocumentController;
 use App\Controllers\InvitationController;
 use App\Controllers\WorkspaceController;
 use App\Core\CSRF;
@@ -33,6 +34,15 @@ return static function (Router $router): void {
     $router->post('/w/{slug}/settings', [WorkspaceController::class, 'update'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/delete', [WorkspaceController::class, 'delete'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/invite', [InvitationController::class, 'showInvite'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/documents', [DocumentController::class, 'index'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/documents/create', [DocumentController::class, 'showCreate'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/documents', [DocumentController::class, 'create'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/documents/{id}', [DocumentController::class, 'show'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/documents/{id}/update', [DocumentController::class, 'update'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/documents/{id}/delete', [DocumentController::class, 'delete'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/documents/{id}/history', [DocumentController::class, 'history'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->get('/w/{slug}/documents/{id}/history/{version_id}', [DocumentController::class, 'showVersion'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/documents/{id}/history/{version_id}/restore', [DocumentController::class, 'restoreVersion'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
 
     $router->get('/about', static function (Request $request, Response $response): Response {
         return View::render('pages/about', ['title' => 'About']);

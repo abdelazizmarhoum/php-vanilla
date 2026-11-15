@@ -11,6 +11,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Core\View;
+use App\Models\Document;
 use App\Models\Membership;
 use App\Models\Workspace;
 use InvalidArgumentException;
