@@ -25,3 +25,4 @@ require dirname(__DIR__) . '/partials/flash.php';
     <button class="btn btn-primary" type="submit">Create account</button>
 </form>
 <p class="mt-3"><a href="/login">Sign in</a></p>
+<p><a href="/forgot-password">Forgot password?</a></p>

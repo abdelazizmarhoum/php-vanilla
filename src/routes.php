@@ -7,7 +7,9 @@ use App\Controllers\AuthController;
 use App\Controllers\CommentController;
 use App\Controllers\DashboardController;
 use App\Controllers\DocumentController;
+use App\Controllers\EmailVerificationController;
 use App\Controllers\InvitationController;
+use App\Controllers\PasswordResetController;
 use App\Controllers\WorkspaceController;
 use App\Controllers\SearchController;
 use App\Core\CSRF;
@@ -56,6 +58,12 @@ return static function (Router $router): void {
     $router->get('/search/api', [SearchController::class, 'api'], [AuthMiddleware::class]);
     $router->get('/invitations/{token}', [InvitationController::class, 'showAccept']);
     $router->post('/invitations/{token}', [InvitationController::class, 'accept'], [AuthMiddleware::class]);
+    $router->get('/verify-email/{token}', [EmailVerificationController::class, 'verify']);
+    $router->post('/verify-email/resend', [EmailVerificationController::class, 'resend'], [AuthMiddleware::class]);
+    $router->get('/forgot-password', [PasswordResetController::class, 'showRequest']);
+    $router->post('/forgot-password', [PasswordResetController::class, 'request']);
+    $router->get('/reset-password/{token}', [PasswordResetController::class, 'showReset']);
+    $router->post('/reset-password/{token}', [PasswordResetController::class, 'reset']);
 
     $router->get('/about', static function (Request $request, Response $response): Response {
         return View::render('pages/about', ['title' => 'About']);

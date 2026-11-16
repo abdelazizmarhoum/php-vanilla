@@ -41,7 +41,18 @@ use App\Core\CSRF;
             </div>
         </div>
     </nav>
-    <main class="container py-4"><?= $content ?></main>
+    <main class="container py-4">
+        <?php if (Auth::check() && Auth::user()['email_verified_at'] === null): ?>
+            <div class="alert alert-warning">
+                Your email is not verified.
+                <form method="post" action="/verify-email/resend" class="d-inline">
+                    <?= CSRF::field() ?>
+                    <button class="btn btn-sm btn-warning" type="submit">Resend verification</button>
+                </form>
+            </div>
+        <?php endif; ?>
+        <?= $content ?>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <?php if (Auth::check()): ?><script src="/assets/js/search.js" defer></script><?php endif; ?>
 </body>

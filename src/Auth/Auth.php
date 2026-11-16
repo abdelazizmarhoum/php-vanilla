@@ -44,7 +44,13 @@ final class Auth
             throw new \RuntimeException('Unable to secure password.');
         }
 
-        return User::create($name, $email, $passwordHash);
+        $user = User::create($name, $email, $passwordHash);
+        $rawToken = EmailVerificationService::send((int) $user['id'], $email);
+        if (config('app.env') === 'local') {
+            Session::flash('dev_verify_url', 'Verification URL: ' . url('/verify-email/' . $rawToken));
+        }
+
+        return $user;
     }
 
     public static function login(string $email, string $password): ?array
