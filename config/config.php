@@ -8,7 +8,8 @@ Dotenv::createImmutable(__DIR__ . '/..')->safeLoad();
 return [
     'app' => [
         'env'   => $_ENV['APP_ENV']   ?? 'local',
-        'debug' => filter_var($_ENV['APP_DEBUG'] ?? 'false', FILTER_VALIDATE_BOOL),
+        'debug' => ($_ENV['APP_ENV'] ?? 'local') === 'local'
+            && filter_var($_ENV['APP_DEBUG'] ?? 'false', FILTER_VALIDATE_BOOL),
         'url'   => rtrim($_ENV['APP_URL'] ?? 'http://localhost:8000', '/'),
     ],
     'db' => [

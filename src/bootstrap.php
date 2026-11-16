@@ -22,6 +22,11 @@ $debug = (bool) config('app.debug', false);
 error_reporting(E_ALL);
 ini_set('display_errors', $debug ? '1' : '0');
 ini_set('log_errors', '1');
+if (config('app.env') !== 'local') {
+    ini_set('display_errors', '0');
+    ini_set('session.cookie_secure', '1');
+    ini_set('expose_php', '0');
+}
 
 // --- Database ---
 Database::init();

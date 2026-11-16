@@ -17,7 +17,7 @@ require dirname(__DIR__) . '/partials/flash.php';
                     <strong><?= e($document['title']) ?></strong>
                     <small><?= e($document['updated_at']) ?></small>
                 </div>
-                <div class="text-body-secondary"><?= e($document['excerpt']) ?></div>
+                <div class="text-muted small"><?= e($document['excerpt_plain']) ?></div>
             </a>
         <?php endforeach; ?>
     </div>

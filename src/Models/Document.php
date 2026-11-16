@@ -24,7 +24,7 @@ final class Document
     public static function listForWorkspace(int $workspaceId): array
     {
         return Database::q(
-            'SELECT id, title, author_id, updated_at, left(content, 200) AS excerpt FROM documents WHERE workspace_id = :workspace_id ORDER BY updated_at DESC, id DESC',
+            "SELECT id, title, author_id, updated_at, regexp_replace(left(content, 300), '[#*_`>\\[\\]()!-]', '', 'g') AS excerpt_plain FROM documents WHERE workspace_id = :workspace_id ORDER BY updated_at DESC, id DESC",
             ['workspace_id' => $workspaceId],
         )->fetchAll();
     }

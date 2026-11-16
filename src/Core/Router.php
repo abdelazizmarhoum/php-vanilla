@@ -58,6 +58,33 @@ final class Router
 
     public function dispatch(string $method, string $path): void
     {
+        try {
+            $this->dispatchRoute($method, $path);
+        } catch (\Throwable $exception) {
+            $logPath = dirname(__DIR__, 2) . '/storage/logs/app.log';
+            $message = sprintf(
+                "[%s] %s in %s:%d%s",
+                date('c'),
+                $exception->getMessage(),
+                $exception->getFile(),
+                $exception->getLine(),
+                PHP_EOL,
+            );
+            file_put_contents($logPath, $message, FILE_APPEND | LOCK_EX);
+            $details = (bool) config('app.debug', false) ? '<pre>' . e($exception->getMessage()) . '</pre>' : '';
+            try {
+                View::render('errors/500', [
+                    'title' => 'Server error',
+                    'details' => $details,
+                ])->status(500)->send();
+            } catch (\Throwable $renderException) {
+                (new Response())->html('Something went wrong', 500)->send();
+            }
+        }
+    }
+
+    private function dispatchRoute(string $method, string $path): void
+    {
         $request = $this->createRequest($method, $path);
 
         foreach ($this->routes as $route) {
@@ -88,9 +115,7 @@ final class Router
             return;
         }
 
-        (new Response())
-            ->html('<h1>404 Not Found</h1>', 404)
-            ->send();
+        View::render('errors/404', ['title' => 'Not found'])->status(404)->send();
     }
 
     /**

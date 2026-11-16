@@ -18,7 +18,7 @@ foreach ($comments as $comment) {
 <h1><?= e($document['title']) ?></h1>
 <p class="text-body-secondary">By <?= e($document['author_name']) ?> · <?= e($document['updated_at']) ?></p>
 <div id="document-view" class="card mb-3">
-    <div class="card-body"><pre class="mb-0"><?= e($document['content']) ?></pre></div>
+    <div class="card-body"><div class="markdown-body"><?= \App\Core\Markdown::toHtml($document['content']) ?></div></div>
 </div>
 <section id="comments" class="mt-4">
     <h2 class="h4">Comments (<?= e($comment_count) ?>)</h2>
@@ -46,9 +46,15 @@ foreach ($comments as $comment) {
                     <label class="form-label" for="edit-title">Title</label>
                     <input class="form-control" id="edit-title" name="title" type="text" value="<?= e($document['title']) ?>" maxlength="200" required>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label" for="edit-content">Content</label>
-                    <textarea class="form-control font-monospace" id="edit-content" name="content" rows="20"><?= e($document['content']) ?></textarea>
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <label class="form-label" for="document-content">Content</label>
+                        <textarea class="form-control font-monospace" id="document-content" name="content" rows="20"><?= e($document['content']) ?></textarea>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label">Preview</label>
+                        <div id="markdown-preview" class="markdown-body border rounded p-3"></div>
+                    </div>
                 </div>
                 <button class="btn btn-primary" type="submit">Save</button>
             </form>
@@ -80,3 +86,4 @@ document.getElementById('delete-document').addEventListener('submit', (event) =>
 </script>
 <?php endif; ?>
 <script src="/assets/js/comments.js" defer></script>
+<?php if ($canWrite): ?><script src="/assets/js/editor.js" defer></script><?php endif; ?>
