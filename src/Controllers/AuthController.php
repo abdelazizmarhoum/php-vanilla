@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Auth\Auth;
+use App\Auth\RateLimiter;
 use App\Core\CSRF;
 use App\Core\Request;
 use App\Core\Response;
@@ -29,9 +30,19 @@ final class AuthController
             return (new Response())->html('CSRF check failed', 419);
         }
 
-        $email = is_string($body['email'] ?? null) ? $body['email'] : '';
+        $email = is_string($body['email'] ?? null) ? trim($body['email']) : '';
         $password = is_string($body['password'] ?? null) ? $body['password'] : '';
-        if (Auth::login($email, $password) === null) {
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : null;
+        if (RateLimiter::tooManyAttempts($email, $ip)) {
+            Session::flash('error', 'Too many failed attempts. Please wait 15 minutes.');
+
+            return (new Response())->redirect('/login');
+        }
+
+        $remember = ($body['remember'] ?? null) === '1';
+        $user = Auth::login($email, $password, $remember);
+        RateLimiter::recordAttempt($email, $ip, $user !== null);
+        if ($user === null) {
             Session::flash('error', 'Invalid email or password');
 
             return (new Response())->redirect('/login');

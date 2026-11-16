@@ -64,6 +64,7 @@ final class PasswordResetService
         }
 
         User::updatePasswordHash((int) $user['id'], $hash);
+        \App\Models\RememberToken::deleteForUser((int) $user['id']);
         PasswordReset::markUsed((int) $reset['id']);
         // Remember-me token invalidation will be added with remember-me support.
 

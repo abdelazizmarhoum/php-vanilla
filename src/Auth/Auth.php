@@ -53,7 +53,7 @@ final class Auth
         return $user;
     }
 
-    public static function login(string $email, string $password): ?array
+    public static function login(string $email, string $password, bool $remember = false): ?array
     {
         $user = User::findByEmail($email);
         if ($user === null || !password_verify($password, (string) $user['password_hash'])) {
@@ -76,15 +76,37 @@ final class Auth
         Session::regenerate();
         CSRF::rotate();
         Session::set('user_id', (int) $user['id']);
+        if ($remember) {
+            RememberMe::issue((int) $user['id']);
+        } else {
+            RememberMe::clear();
+        }
 
         return $user;
     }
 
     public static function logout(): void
     {
+        RememberMe::clear();
         Session::remove('user_id');
         Session::regenerate();
         Session::destroy();
+    }
+
+    public static function attemptRememberMe(): void
+    {
+        if (Session::has('user_id')) {
+            return;
+        }
+
+        $user = RememberMe::attempt();
+        if ($user === null) {
+            return;
+        }
+
+        Session::regenerate();
+        CSRF::rotate();
+        Session::set('user_id', (int) $user['id']);
     }
 
     public static function user(): ?array

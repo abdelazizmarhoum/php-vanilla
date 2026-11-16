@@ -25,6 +25,7 @@ ini_set('log_errors', '1');
 
 // --- Database ---
 Database::init();
+\App\Auth\Auth::attemptRememberMe();
 
 // --- Router ---
 $router = new Router();

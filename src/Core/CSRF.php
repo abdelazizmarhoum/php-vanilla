@@ -13,15 +13,17 @@ final class CSRF
 
     public static function token(): string
     {
-        $token = Session::get(self::SESSION_KEY);
-        if (is_string($token) && $token !== '') {
-            return $token;
+        if (!Session::has('_csrf_issued_at')) {
+            Session::set('_csrf_issued_at', time());
         }
 
-        $token = bin2hex(random_bytes(32));
-        Session::set(self::SESSION_KEY, $token);
+        $age = time() - (int) Session::get('_csrf_issued_at', 0);
+        if ($age > 4 * 3600 || !Session::has(self::SESSION_KEY)) {
+            self::rotate();
+            Session::set('_csrf_issued_at', time());
+        }
 
-        return $token;
+        return (string) Session::get(self::SESSION_KEY);
     }
 
     public static function verify(?string $token): bool

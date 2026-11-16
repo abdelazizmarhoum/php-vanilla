@@ -23,8 +23,21 @@ final class Session
             'samesite' => (string) config('session.samesite', 'Lax'),
         ]);
 
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_samesite', 'Lax');
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
         session_name((string) config('session.name', 'app_session'));
         session_start();
+
+        $lastSeen = (int) ($_SESSION['_last_seen'] ?? 0);
+        if ($lastSeen > 0 && (time() - $lastSeen) > (30 * 60)) {
+            self::destroy();
+            self::start();
+
+            return;
+        }
+        $_SESSION['_last_seen'] = time();
     }
 
     public static function regenerate(): void
@@ -92,6 +105,7 @@ final class Session
         if (session_status() !== PHP_SESSION_NONE) {
             session_unset();
             session_destroy();
+            session_write_close();
         }
 
         $_SESSION = [];

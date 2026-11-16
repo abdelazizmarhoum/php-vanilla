@@ -17,6 +17,10 @@ require dirname(__DIR__) . '/partials/flash.php';
         <label class="form-label" for="password">Password</label>
         <input class="form-control" id="password" name="password" type="password" required>
     </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="remember" value="1" id="remember">
+        <label class="form-check-label" for="remember">Remember me for 30 days</label>
+    </div>
     <button class="btn btn-primary" type="submit">Sign in</button>
 </form>
 <p class="mt-3"><a href="/register">Create account</a></p>
