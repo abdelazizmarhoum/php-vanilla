@@ -37,6 +37,8 @@ return static function (Router $router): void {
     $router->post('/w/{slug}/settings', [WorkspaceController::class, 'update'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/delete', [WorkspaceController::class, 'delete'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/invite', [InvitationController::class, 'showInvite'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/invite', [InvitationController::class, 'send'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
+    $router->post('/w/{slug}/invite/{id}/revoke', [InvitationController::class, 'revoke'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/documents', [DocumentController::class, 'index'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/w/{slug}/documents/create', [DocumentController::class, 'showCreate'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->post('/w/{slug}/documents', [DocumentController::class, 'create'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
@@ -52,6 +54,8 @@ return static function (Router $router): void {
     $router->get('/w/{slug}/activity/feed', [ActivityController::class, 'feed'], [AuthMiddleware::class, WorkspaceMiddleware::class]);
     $router->get('/search', [SearchController::class, 'page'], [AuthMiddleware::class]);
     $router->get('/search/api', [SearchController::class, 'api'], [AuthMiddleware::class]);
+    $router->get('/invitations/{token}', [InvitationController::class, 'showAccept']);
+    $router->post('/invitations/{token}', [InvitationController::class, 'accept'], [AuthMiddleware::class]);
 
     $router->get('/about', static function (Request $request, Response $response): Response {
         return View::render('pages/about', ['title' => 'About']);

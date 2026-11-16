@@ -8,6 +8,7 @@ require dirname(__DIR__) . '/partials/flash.php';
 <h1>Sign in</h1>
 <form method="post" action="/login">
     <?= CSRF::field() ?>
+    <input type="hidden" name="invitation" value="<?= e($invitation_token ?? '') ?>">
     <div class="mb-3">
         <label class="form-label" for="email">Email</label>
         <input class="form-control" id="email" name="email" type="email" required>

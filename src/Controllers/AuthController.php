@@ -15,7 +15,10 @@ final class AuthController
 {
     public function showLogin(Request $req): Response
     {
-        return View::render('auth/login', ['title' => 'Sign in']);
+        return View::render('auth/login', [
+            'title' => 'Sign in',
+            'invitation_token' => $req->query['invitation'] ?? '',
+        ]);
     }
 
     public function login(Request $req): Response
@@ -34,12 +37,17 @@ final class AuthController
             return (new Response())->redirect('/login');
         }
 
-        return (new Response())->redirect('/');
+        $invitation = is_string($body['invitation'] ?? null) ? $body['invitation'] : '';
+
+        return (new Response())->redirect($invitation !== '' ? '/invitations/' . $invitation : '/');
     }
 
     public function showRegister(Request $req): Response
     {
-        return View::render('auth/register', ['title' => 'Create account']);
+        return View::render('auth/register', [
+            'title' => 'Create account',
+            'invitation_token' => $req->query['invitation'] ?? '',
+        ]);
     }
 
     public function register(Request $req): Response
@@ -69,8 +77,9 @@ final class AuthController
         }
 
         Session::flash('success', 'Welcome aboard');
+        $invitation = is_string($body['invitation'] ?? null) ? $body['invitation'] : '';
 
-        return (new Response())->redirect('/');
+        return (new Response())->redirect($invitation !== '' ? '/invitations/' . $invitation : '/');
     }
 
     public function logout(Request $req): Response

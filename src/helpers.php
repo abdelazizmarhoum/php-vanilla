@@ -63,6 +63,8 @@ function humanize_action(string $action, array $meta = []): string
         'comment.deleted' => $documentTitle === '' ? 'deleted a comment' : "deleted a comment on '{$documentTitle}'",
         'workspace.created' => isset($meta['name']) ? "created workspace '{$meta['name']}'" : 'created a workspace',
         'workspace.updated' => isset($meta['name']) ? "renamed workspace to '{$meta['name']}'" : 'updated the workspace',
+        'member.invited' => isset($meta['email']) ? "invited {$meta['email']}" : 'invited a member',
+        'member.joined' => 'joined the workspace',
         default => $action,
     };
 }
